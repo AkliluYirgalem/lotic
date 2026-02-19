@@ -1,6 +1,8 @@
-use proc_macro::TokenStream;
-use quote::quote;
-use syn::{FnArg, ItemFn, PathArguments, Type, parse_macro_input};
+use {
+    proc_macro::TokenStream,
+    quote::quote,
+    syn::{FnArg, ItemFn, PathArguments, Type, parse_macro_input},
+};
 
 // This will only check the signature of the instruction functions, it will
 // result in error if the first argument isnt &Context<T> or if the rest of the
