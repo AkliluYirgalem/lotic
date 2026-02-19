@@ -1,6 +1,6 @@
 [package]
 name = "basic-usage"
-version = "0.1.0"
+version = "0.0.0"
 edition = "2024"
 
 [lib]
@@ -8,3 +8,9 @@ crate-type = ["cdylib"]
 
 [dependencies]
 lotic = { path = "../.." }
+pinocchio = { version = "0.10.1" }
+pinocchio-log = { version = "0.5.1" }
+
+[lints.rust.unexpected_cfgs]
+level = "warn"
+check-cfg = ['cfg(target_os, values("solana"))']

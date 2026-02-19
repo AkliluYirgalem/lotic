@@ -1,0 +1,16 @@
+[package]
+name = "read_ix"
+version = "0.0.1"
+edition = "2024"
+
+[dependencies]
+syn = { version = "2.0.116", features = ["full", "extra-traits"] }
+clap = { version = "4.5.59", features = ["derive"] }
+cargo_metadata = { version = "0.23.1" }
+walkdir = { version = "2.5.0" }
+anyhow = { version = "1.0.101" }
+camino = "1.1"
+quote = { version = "1.0.44" }
+serde = "1.0.228"
+proc-macro2 = "1.0.106"
+serde_json = "1.0.149"

@@ -1,24 +1,14 @@
-use {
-    proc_macro::TokenStream,
-    quote::quote,
-    syn::{ItemMod, parse_macro_input},
-};
+use proc_macro::TokenStream;
+
+mod instruction;
+mod instruction_accounts;
 
 #[proc_macro_attribute]
-pub fn program(_attr: TokenStream, item: TokenStream) -> TokenStream {
-    let input = parse_macro_input!(item as ItemMod);
-    let content = input.content.as_ref().unwrap();
+pub fn instruction(attr: TokenStream, item: TokenStream) -> TokenStream {
+    instruction::instruction(attr, item)
+}
 
-    for item in content.1.iter() {
-        if let syn::Item::Fn(func) = item {
-            if let syn::Visibility::Public(_) = func.vis {
-                println!("{}", func.sig.ident);
-            }
-        }
-    }
-    let expanded = quote! {
-        #input
-    };
-
-    TokenStream::from(expanded)
+#[proc_macro_derive(InstructionAccounts, attributes(lotic))]
+pub fn instruction_accounts(input: TokenStream) -> TokenStream {
+    instruction_accounts::instruction_accounts(input)
 }
