@@ -12,7 +12,6 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 pub enum Commands {
-    // Reads Cargo.toml and lists source files defined in [package.metadata.lotic]
     Build {
         // Path to the Cargo.toml file
         #[arg(long, default_value = "Cargo.toml")]
