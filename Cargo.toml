@@ -4,14 +4,14 @@ version = "0.0.1"
 edition = "2024"
 
 [workspace]
-members = ["examples/basic-usage", "cli", "lotic-macros"]
+members = ["cli", "examples/basic-usage", "lotic-macros"]
+
+[workspace.dependencies]
+pinocchio = "0.10.1"
 
 [dependencies]
 lotic-macros = { path = "lotic-macros" }
 pinocchio = { workspace = true }
-
-[workspace.dependencies]
-pinocchio = "0.10.1"
 
 # [package.metadata.lotic]
 # instructions = ["lotic-macros"]
