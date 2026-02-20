@@ -1,7 +1,9 @@
 use {
-    lotic::{Context, InstructionAccounts, instruction},
+    lotic::{Context, InstructionAccounts, declare_program, instruction},
     pinocchio::{AccountView, ProgramResult},
 };
+
+declare_program!("Hello");
 
 #[instruction]
 fn initialize(ctx: &Context<Initialize>, name: &u64, age: &u64) -> ProgramResult {
