@@ -26,11 +26,11 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
 
     let expanded = quote! {
         impl <'view> core::convert::TryFrom<&'view [AccountView]> for #struct_ident <'view>  {
-            type Error = pinocchio::error::ProgramError;
+            type Error = ::pinocchio::error::ProgramError;
 
             fn try_from(accounts: &'view [AccountView]) -> Result<Self, Self::Error> {
                 let [#(#field_idents,)* ..] = accounts else {
-                    return Err(pinocchio::error::ProgramError::NotEnoughAccountKeys);
+                    return Err(::pinocchio::error::ProgramError::NotEnoughAccountKeys);
                 };
 
                 let accounts = Self {

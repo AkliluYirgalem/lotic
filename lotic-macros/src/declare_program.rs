@@ -77,7 +77,7 @@ pub fn declare_program(input: TokenStream) -> TokenStream {
     }
 
     let expanded = quote! {
-        pub const __PROGRAM_ID__: pinocchio::Address =
+        pub const __PROGRAM_ID__: ::pinocchio::Address =
             pinocchio::Address::new_from_array([
                 #( #program_id_bytes ),*
             ]);
