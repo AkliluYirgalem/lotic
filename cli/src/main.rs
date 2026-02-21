@@ -1,10 +1,10 @@
-mod args;
-mod command_processor;
-
 use {
     args::{Cli, Commands},
     clap::Parser,
 };
+
+mod args;
+mod command_processor;
 
 fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();

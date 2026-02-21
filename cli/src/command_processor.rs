@@ -9,8 +9,8 @@ use {
 
 #[derive(Serialize)]
 pub struct InstructionFn {
-    pub name: String,
-    pub args: Vec<String>,
+    pub ix_name: String,
+    pub ix_args: Vec<String>,
 }
 
 pub fn run_build(manifest_path: Utf8PathBuf) -> Result<()> {
@@ -84,14 +84,14 @@ fn collect_instruction_functions(rust_files: &[Utf8PathBuf]) -> Result<Vec<Instr
             if let syn::Item::Fn(func) = item {
                 if has_instruction_attr(&func.attrs) {
                     instructions.push(InstructionFn {
-                        name: func.sig.ident.to_string(),
-                        args: extract_fn_args(&func),
+                        ix_name: func.sig.ident.to_string(),
+                        ix_args: extract_fn_args(&func),
                     });
                 }
             }
         }
     }
-    instructions.sort_by(|a, b| a.name.cmp(&b.name));
+    instructions.sort_by(|a, b| a.ix_name.cmp(&b.ix_name));
     Ok(instructions)
 }
 

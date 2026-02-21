@@ -1,47 +1,30 @@
 use {
-    lotic::{Context, InstructionAccounts, declare_program, instruction},
-    pinocchio::{AccountView, ProgramResult},
+    lotic::{declare_program, instruction, Context, InstructionAccounts},
+    pinocchio::{AccountView, ProgramResult, entrypoint},
 };
 
-declare_program!("Hello");
+declare_program!("qWi7Aia7isECbFw7r5mE54rqRb3GZBDMkaCsMDX6dox");
 
 #[instruction]
-fn initialize(ctx: &Context<Initialize>, name: &u64, age: &u64) -> ProgramResult {
+fn initialize(ctx: &Context<Initialize>) -> ProgramResult {
+    ctx.accounts
+        .authority
+        .set_lamports(ctx.accounts.authority.lamports().checked_sub(5).unwrap());
+    ctx.accounts
+        .data_account
+        .set_lamports(ctx.accounts.data_account.lamports().checked_add(5).unwrap());
     Ok(())
 }
 
 #[instruction]
-fn aupdate(ctx: &Context<Initialize>, name: &str, age: &u64) -> ProgramResult {
+fn aupdate(_ctx: &Context<Initialize>) -> ProgramResult {
     Ok(())
 }
 
 #[instruction]
-fn update(ctx: &Context<Initialize>, name: &str, age: &u64) -> ProgramResult {
+fn update(_ctx: &Context<Initialize>) -> ProgramResult {
     Ok(())
 }
-
-// pinocchio::entrypoint!(__process_instruction__);
-
-// pub fn __process_instruction__(
-//     _program_id: &pinocchio::Address,
-//     _accounts: &[AccountView],
-//     instruction_data: &[u8],
-// ) -> ProgramResult {
-//     let (ix, _args) = instruction_data
-//         .split_first()
-//         .ok_or(pinocchio::error::ProgramError::InvalidInstructionData)?;
-
-//     match *ix {
-//         0 => {
-//             // todo
-
-//             //hello_lotic::_initialize(ctx)
-//             Ok(())
-//         }
-//         _ =>
-// ProgramResult::Err(pinocchio::error::ProgramError::InvalidInstructionData),
-//     }
-// }
 
 #[derive(InstructionAccounts)]
 pub struct Initialize<'view> {

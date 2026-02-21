@@ -1,16 +1,18 @@
 use {
+    bs58,
     camino::Utf8PathBuf,
     cargo_metadata::MetadataCommand,
     proc_macro::TokenStream,
+    quote::quote,
     serde::Deserialize,
     std::{fs, path::Path},
-    syn::{LitStr, parse_macro_input},
+    syn::{parse_macro_input, Ident, LitStr},
 };
 
 #[derive(Deserialize)]
 pub struct InstructionFn {
-    pub name: String,
-    pub args: Vec<String>,
+    pub ix_name: String,
+    pub ix_args: Vec<String>,
 }
 
 pub fn read_instructions() -> String {
@@ -29,14 +31,78 @@ pub fn read_instructions() -> String {
 }
 
 pub fn declare_program(input: TokenStream) -> TokenStream {
+    let program_id_lit = parse_macro_input!(input as LitStr);
+
+    let decoded = match bs58::decode(&program_id_lit.value()).into_vec() {
+        Ok(v) => v,
+        Err(_) => {
+            return syn::Error::new_spanned(program_id_lit, "invalid base58 Solana program id")
+                .to_compile_error()
+                .into();
+        }
+    };
+
+    if decoded.len() != 32 {
+        return syn::Error::new_spanned(
+            program_id_lit,
+            "program id must decode to exactly 32 bytes",
+        )
+        .to_compile_error()
+        .into();
+    }
+
+    let program_id_bytes = decoded.iter();
+
     let instructions: Vec<InstructionFn> =
         serde_json::from_str(&read_instructions()).expect("Invalid instructions.json");
 
-    for instruction in instructions.iter() {
-        println!("{}, {}", instruction.name, instruction.args[0]);
+    let mut arms = Vec::new();
+
+    for (index, inst) in instructions.iter().enumerate() {
+        let discriminator = index as u8; // sequential discriminator starting from 0
+        let ix_handler = Ident::new(&inst.ix_name, proc_macro2::Span::call_site());
+
+        let ctx_type_str = &inst.ix_args[0];
+        let ctx_type = Ident::new(ctx_type_str, proc_macro2::Span::call_site());
+
+        arms.push(quote! {
+            #discriminator => {
+                let ctx = Context {
+                    program_id,
+                    accounts: &mut #ctx_type::try_from(accounts)?,
+                };
+                #ix_handler(&ctx)
+            }
+        });
     }
 
-    let input_str = parse_macro_input!(input as LitStr).value();
+    let expanded = quote! {
+        pub const __PROGRAM_ID__: pinocchio::Address =
+            pinocchio::Address::new_from_array([
+                #( #program_id_bytes ),*
+            ]);
+        entrypoint!(__process_instruction__);
+        #[inline(always)]
+        pub fn __process_instruction__(
+            program_id: &pinocchio::Address,
+            accounts: &[AccountView],
+            instruction_data: &[u8],
+        ) -> ProgramResult {
+            if program_id != &__PROGRAM_ID__ {
+                return Err(pinocchio::error::ProgramError::IncorrectProgramId);
+            }
 
-    TokenStream::new()
+            let (discriminator, _args) = instruction_data
+                .split_first()
+                .ok_or(pinocchio::error::ProgramError::InvalidInstructionData)?;
+
+            match *discriminator {
+                #( #arms, )*
+                _ => Err(pinocchio::error::ProgramError::InvalidInstructionData),
+            }
+        }
+    };
+
+    expanded.into()
+    // TokenStream::new()
 }
