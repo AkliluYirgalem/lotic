@@ -12,6 +12,3 @@ pinocchio = "0.10.1"
 [dependencies]
 lotic-macros = { path = "lotic-macros" }
 pinocchio = { workspace = true }
-
-# [package.metadata.lotic]
-# instructions = ["lotic-macros"]

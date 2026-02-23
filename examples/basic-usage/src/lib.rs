@@ -3,7 +3,7 @@ use {
     pinocchio::{AccountView, ProgramResult, entrypoint},
 };
 
-declare_program!("qWi7Aia7isECbFw7r5mE54rqRb3GZBDMkaCsMDX6dox");
+declare_program!("2JF8AjwkmCz6brkAkJf8NEEKhg89a8KrTuDZiZ5cVdS2");
 
 #[instruction]
 fn initialize(ctx: &Context<Initialize>) -> ProgramResult {
