@@ -2,9 +2,11 @@ use {
     bs58,
     camino::Utf8PathBuf,
     cargo_metadata::MetadataCommand,
+    pinocchio::Address,
     proc_macro::TokenStream,
     quote::quote,
     serde::Deserialize,
+    solana_program::pubkey::Pubkey,
     std::{fs, path::Path},
     syn::{parse_macro_input, Ident, LitStr},
 };
@@ -46,6 +48,16 @@ pub fn declare_program(input: TokenStream) -> TokenStream {
         return syn::Error::new_spanned(
             program_id_lit,
             "program id must decode to exactly 32 bytes",
+        )
+        .to_compile_error()
+        .into();
+    }
+
+    let pubkey = Address::from_str_const(&program_id_lit.value());
+    if !Address::is_on_curve(&pubkey) {
+        return syn::Error::new_spanned(
+            program_id_lit,
+            "program id must be a non-PDA (on-curve) Solana address",
         )
         .to_compile_error()
         .into();
