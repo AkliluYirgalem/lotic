@@ -1,12 +1,10 @@
 use {
-    bs58,
     camino::Utf8PathBuf,
     cargo_metadata::MetadataCommand,
     pinocchio::Address,
     proc_macro::TokenStream,
     quote::quote,
     serde::Deserialize,
-    solana_program::pubkey::Pubkey,
     std::{fs, path::Path},
     syn::{parse_macro_input, Ident, LitStr},
 };

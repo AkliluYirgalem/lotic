@@ -1,4 +1,4 @@
-pub use lotic_macros::{InstructionAccounts, declare_program, instruction};
+pub use lotic_macros::{declare_program, instruction, InstructionAccounts};
 use pinocchio::Address;
 
 pub struct Context<'a, T> {

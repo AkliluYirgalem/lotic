@@ -1,7 +1,7 @@
 use {
     proc_macro::TokenStream,
     quote::quote,
-    syn::{Data, DeriveInput, Fields, parse_macro_input},
+    syn::{parse_macro_input, Data, DeriveInput, Fields},
 };
 
 pub fn instruction_accounts(input: TokenStream) -> TokenStream {
