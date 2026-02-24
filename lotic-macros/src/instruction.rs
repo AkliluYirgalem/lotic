@@ -1,7 +1,7 @@
 use {
     proc_macro::TokenStream,
     quote::quote,
-    syn::{FnArg, ItemFn, PathArguments, Type, parse_macro_input},
+    syn::{parse_macro_input, FnArg, ItemFn, PathArguments, Type},
 };
 
 // This will only check the signature of the instruction functions, it will
