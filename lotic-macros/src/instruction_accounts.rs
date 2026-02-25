@@ -8,7 +8,7 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let struct_ident = input.ident;
 
-    // let mut validations = Vec::new();
+    let mut validations = Vec::new();
     let mut field_idents = Vec::new();
 
     let Data::Struct(data) = input.data else {
@@ -22,6 +22,21 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
     for field in fields.named {
         let field_ident = field.ident.unwrap(); // Because We are expecting named structs.
         field_idents.push(field_ident.clone());
+
+        for attr in &field.attrs {
+            if attr.path().is_ident("lotic") {
+                let _ = attr.parse_nested_meta(|meta| {
+                    if meta.path.is_ident("signer") {
+                        validations.push(quote! {
+                            if !self.#field_ident.is_signer() {
+                                return Err(ProgramError::MissingRequiredSignature);
+                            }
+                        });
+                    }
+                    Ok(())
+                });
+            }
+        }
     }
 
     let expanded = quote! {
