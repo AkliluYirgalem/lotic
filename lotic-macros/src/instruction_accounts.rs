@@ -32,6 +32,12 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
                                 return Err(ProgramError::MissingRequiredSignature);
                             }
                         });
+                    } else if meta.path.is_ident("mut") {
+                        validations.push(quote! {
+                            if !self.#field_ident.is_writable() {
+                                return Err(ProgramError::Immutable);
+                            }
+                        });
                     }
                     Ok(())
                 });
