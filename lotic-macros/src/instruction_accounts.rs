@@ -38,6 +38,18 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
                                 return Err(ProgramError::Immutable);
                             }
                         });
+                    } else if meta.path.is_ident("program") {
+                        meta.value()?; // Consume =
+                        let account_type: syn::Path = meta.input.parse()?;
+
+                        if account_type.is_ident("system") {
+                            validations.push(quote! {
+                                let system_program_address = Address::from_str_const("11111111111111111111111111111111");
+                                if self.#field_ident.address()!= &system_program_address {
+                                    return Err(ProgramError::IncorrectProgramId);
+                                }
+                            });
+                        }
                     }
                     Ok(())
                 });
