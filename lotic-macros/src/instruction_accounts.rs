@@ -29,13 +29,13 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
                     if meta.path.is_ident("signer") {
                         validations.push(quote! {
                             if !self.#field_ident.is_signer() {
-                                return Err(ProgramError::MissingRequiredSignature);
+                                return Err(::pinocchio::error::ProgramError::MissingRequiredSignature);
                             }
                         });
                     } else if meta.path.is_ident("mut") {
                         validations.push(quote! {
                             if !self.#field_ident.is_writable() {
-                                return Err(ProgramError::Immutable);
+                                return Err(::pinocchio::error::ProgramError::Immutable);
                             }
                         });
                     } else if meta.path.is_ident("program") {
@@ -44,9 +44,16 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
 
                         if account_type.is_ident("system") {
                             validations.push(quote! {
-                                let system_program_address = Address::from_str_const("11111111111111111111111111111111");
+                                let system_program_address = ::pinocchio::Address::from_str_const("11111111111111111111111111111111");
                                 if self.#field_ident.address()!= &system_program_address {
-                                    return Err(ProgramError::IncorrectProgramId);
+                                    return Err(::pinocchio::error::ProgramError::IncorrectProgramId);
+                                }
+                            });
+                        } else if account_type.is_ident("vote") {
+                            validations.push(quote! {
+                                let vote_program_address = ::pinocchio::Address::from_str_const("Vote111111111111111111111111111111111111111");
+                                if self.#field_ident.address()!= &vote_program_address {
+                                    return Err(::pinocchio::error::ProgramError::IncorrectProgramId);
                                 }
                             });
                         }
@@ -70,8 +77,15 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
                     #(#field_idents,)*
                 };
 
-                // accounts.check_constraints()?;
+                accounts.check_constraints()?;
                 Ok(accounts)
+            }
+        }
+
+        impl <'view> #struct_ident <'view> {
+            fn check_constraints(&self) -> Result<(), ::pinocchio::error::ProgramError> {
+                #(#validations)*
+                Ok(())
             }
         }
     };
