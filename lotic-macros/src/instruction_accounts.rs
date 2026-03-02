@@ -71,6 +71,14 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
                                 }
                             });
                         }
+                        else if account_type.is_ident("compute_budget") {
+                            validations.push(quote! {
+                                let compute_budget_program_address = Address::from_str_const("ComputeBudget111111111111111111111111111111");
+                                if self.#field_ident.address()!= &compute_budget_program_address {
+                                    return Err(ProgramError::IncorrectProgramId);
+                                }
+                            });
+                        }
                     }
                     Ok(())
                 });
