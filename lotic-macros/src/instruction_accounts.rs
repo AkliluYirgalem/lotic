@@ -86,6 +86,13 @@ pub fn instruction_accounts(input: TokenStream) -> TokenStream {
                                     return Err(::pinocchio::error::ProgramError::IncorrectProgramId);
                                 }
                             });
+                        } else if account_type.get_ident().to_token_stream().to_string().to_lowercase() == "tokenkeg" {
+                            validations.push(quote! {
+                                let tokenkeg = ::pinocchio::Address::from_str_const("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+                                if self.#field_ident.address()!= &tokenkeg{
+                                    return Err(ProgramError::IncorrectProgramId);
+                                }
+                            });
                         }
                     }
                     Ok(())
