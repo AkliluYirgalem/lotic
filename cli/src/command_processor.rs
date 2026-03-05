@@ -8,9 +8,9 @@ use {
 };
 
 #[derive(Serialize)]
-pub struct InstructionFn {
-    pub ix_name: String,
-    pub ix_args: Vec<String>,
+struct InstructionFn {
+    ix_name: String,
+    ix_args: Vec<String>,
 }
 
 pub fn run_build(manifest_path: Utf8PathBuf) -> Result<()> {
