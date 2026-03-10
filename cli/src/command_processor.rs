@@ -2,8 +2,9 @@ use {
     anyhow::{Context, Result},
     camino::Utf8PathBuf,
     cargo_metadata::MetadataCommand,
+    heck::ToKebabCase,
     serde::Serialize,
-    std::process::Stdio,
+    std::{fs, path::Path, process::Stdio},
     syn::{Attribute, GenericArgument, PathArguments, Type, TypePath},
     walkdir::WalkDir,
 };
@@ -193,19 +194,14 @@ fn package_name_from_manifest(path: &Utf8PathBuf) -> Result<String> {
         .with_context(|| format!("Could not find [package.name] in: {path}"))
 }
 
-use heck::{ToKebabCase, ToSnakeCase};
-use std::fs;
-use std::path::Path;
-
 pub fn run_init(project_name: String) -> Result<()> {
-    let folder_name = project_name.to_kebab_case();
-    let crate_name = project_name.to_snake_case();
+    let crate_name = project_name.to_kebab_case();
 
-    let root_path = Path::new(&folder_name);
+    let root_path = Path::new(&crate_name);
     let src_path = root_path.join("src");
 
     if root_path.exists() {
-        anyhow::bail!("Directory '{}' already exists", folder_name);
+        anyhow::bail!("Directory '{}' already exists", crate_name);
     }
 
     fs::create_dir_all(&src_path)
@@ -246,6 +242,6 @@ pub struct Hello {}
 
     fs::write(src_path.join("lib.rs"), lib_rs).context("Failed to write src/lib.rs")?;
 
-    println!("Successfully initialized '{folder_name}'");
+    println!("Successfully initialized '{crate_name}'");
     Ok(())
 }
