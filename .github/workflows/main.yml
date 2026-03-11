@@ -87,6 +87,7 @@ jobs:
   test:
     name: Bulid and test
     runs-on: ubuntu-latest
+    needs: build-lotic-cli
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
